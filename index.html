@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chúc mừng 20/10</title>
+    <style>
+        body {
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBajuZIKdleDKsQbQGQOi54QyWIRF0qQZrVQ&s');
+            background-size: cover;
+            background-position: center;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            color: #ff0066;
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+        h2 {
+            font-size: 25px;
+            margin-top: 0;
+            color: #ff6699;
+        }
+        p {
+            font-size: 18px;
+        }
+        .heart {
+            font-size: 100px;
+            color: #ff3366;
+            animation: heartbeat 1.5s infinite;
+        }
+        @keyframes heartbeat {
+            0%, 20%, 40%, 60%, 80%, 100% {
+                transform: scale(1);
+            }
+            30%, 50%, 70% {
+                transform: scale(1.2);
+            }
+        }
+        .gift-box {
+            display: none; /* Ẩn hộp quà mặc định */
+            margin-top: 30px;
+            padding: 20px;
+            border: 3px solid #ff66b2;
+            border-radius: 15px;
+            background-color: #ffe6f7;
+            box-shadow: 0 0 15px rgba(255, 102, 178, 0.6);
+            z-index: 2; /* Đảm bảo hộp quà không bị canvas che */
+            position: relative;
+        }
+        .signature {
+            margin-top: 30px;
+            font-style: italic;
+            color: #cc0099;
+        }
+        button {
+            background-color: #ff6699;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 102, 178, 0.7);
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #ff3366;
+        }
+        /* Style cho form đăng nhập nổi */
+        .login-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 999; /* Đảm bảo popup luôn hiển thị trên */
+        }
+        .login-popup input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .login-popup button {
+            background-color: #ff6699;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .login-popup button:hover {
+            background-color: #ff3366;
+        }
+        .login-popup .error {
+            color: red;
+        }
+
+        /* Ẩn nội dung trang chính khi chưa đăng nhập */
+        #mainContent {
+            display: none;
+        }
+        /* Canvas cho pháo hoa */
+        #fireworksCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Đặt canvas ra sau nội dung */
+        }
+
+        /* Lớp phủ mờ */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Màu đen mờ */
+            z-index: 100; /* Đảm bảo overlay nằm trên nội dung chính */
+            display: none; /* Mặc định ẩn */
+        }
+    </style>
+</head>
+<body>
+    <!-- Lớp phủ làm mờ nền -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Popup đăng nhập -->
+    <div class="login-popup" id="loginPopup">
+        <h2>Vui lòng nhập mật khẩu</h2>
+        <input type="password" id="password" placeholder="Nhập mật khẩu">
+        <button onclick="checkPassword()">Đăng nhập</button>
+        <p class="error" id="errorMessage"></p>
+    </div>
+
+    <!-- Nội dung chính của trang, được ẩn ban đầu -->
+    <div id="mainContent">
+        <h1>Chúc mừng ngày 20/10!</h1>
+        <h2>Chúc hà phương có ngày lễ vui vẻ</h2>
+        <p>Hôm nay là một ngày thật đặc biệt, tôi gửi bạn món quà</p>
+        <p>Chúc em luôn bình an, xinh đẹp😍</p>
+
+        <img src="hp.jpg" alt="Hình ảnh của em" style="width: 300px; height: auto; border-radius: 15px; margin-top: 20px; box-shadow: 0 0 15px rgba(255, 102, 178, 0.6);">
+
+        <div class="heart">🥰</div>
+
+        <button onclick="showGiftBox()">Nhấn để mở hộp quà 🎁</button>
+
+        <div class="gift-box" id="giftBox1">
+            <p>Chúc em luôn hạnh phúc, thành công và mãi xinh đẹp như vậy,🥰😘🥰</p>
+        </div>
+
+        <div class="gift-box" id="giftBox2">
+            <p>Nhấn vào đây để nhận quà!</p>
+        </div>
+
+        <p class="signature">Gửi chút lời yêu thương đến bạn 💕</p>
+    </div>
+
+    <canvas id="fireworksCanvas"></canvas>
+    <div class="music-controls">
+        <button onclick="playMusic()">Phát nhạc 🎶</button>
+    </div>
+
+    <!-- Thêm nhạc với đường dẫn hợp lệ -->
+    <audio id="backgroundMusic" loop>
+        <source src="Y2meta.app - Cứ Chill Thôi - Chillies (Official Music Video) ft. Suni Hạ Linh & Rhymastic (128 kbps).mp3" type="audio/mpeg">
+        Trình duyệt của bạn không hỗ trợ phát nhạc.
+    </audio>
+
+    <script>
+        // Hiển thị hộp quà 1 khi nhấn nút
+        function showGiftBox() {
+            var giftBox1 = document.getElementById("giftBox1");
+            giftBox1.style.display = "block"; // Hiển thị hộp quà khi nhấn
+        }
+
+        // Thêm chức năng cho hộp quà 2
+        document.getElementById('giftBox2').addEventListener('click', function() {
+            this.innerHTML = "<p>Chúc mừng! Bạn đã nhận được một món quà bất ngờ!</p>";
+        });
+
+        function showLoginPopup() {
+            document.getElementById("loginPopup").style.display = "block";
+            document.getElementById("overlay").style.display = "block"; // Hiển thị lớp phủ
+        }
+
+        function checkPassword() {
+            var password = document.getElementById("password").value;
+            var errorMessage = document.getElementById("errorMessage");
+
+            // Kiểm tra mật khẩu
+            if (password === "haphuong") {  // Thay "matkhaucuaban" bằng mật khẩu bạn muốn
+                document.getElementById("loginPopup").style.display = "none"; // Ẩn popup sau khi đăng nhập thành công
+                document.getElementById("overlay").style.display = "none";    // Ẩn lớp phủ
+                document.getElementById("mainContent").style.display = "block"; // Hiển thị nội dung chính
+                alert("Đăng nhập thành công!");
+            } else {
+                errorMessage.textContent = "Mật khẩu sai. Vui lòng thử lại.";
+            }
+        }
+
+        // Tự động hiển thị popup đăng nhập khi trang được tải
+        window.onload = function() {
+            showLoginPopup();
+        };
+
+        // Phát nhạc nền
+        var music = document.getElementById("backgroundMusic");
+
+        function playMusic() {
+            music.play(); // Bắt đầu phát nhạc
+        }
+
+        const canvas = document.getElementById('fireworksCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas size
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Fireworks particle constructor
+        function Firework(x, y) {
+            this.x = x;
+            this.y = y;
+            this.size = Math.random() * 2 + 1;
+            this.speedX = Math.random() * 4 - 2;
+            this.speedY = Math.random() * 4 - 2;
+            this.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        }
+
+        Firework.prototype.update = function() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            this.size *= 0.98; // Shrink effect
+        }
+
+        Firework.prototype.draw = function() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+        }
+
+        let fireworks = [];
+
+        function handleFireworks() {
+            for (let i = 0; i < fireworks.length; i++) {
+                fireworks[i].update();
+                fireworks[i].draw();
+                if (fireworks[i].size <= 0.5) {
+                    fireworks.splice(i, 1);
+                    i--;
+                }
+            }
+        }
+
+        function createFireworks() {
+            for (let i = 0; i < 10; i++) {
+                fireworks.push(new Firework(Math.random() * canvas.width, Math.random() * canvas.height));
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            handleFireworks();
+            createFireworks();
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
